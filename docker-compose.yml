@@ -1,0 +1,25 @@
+services:
+  signals:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: starlift-weak-signals:latest
+    container_name: starlift-weak-signals
+    restart: unless-stopped
+    # GIGACHAT_TOKEN и прочие настройки — из .env; на стенде его кладёт workflow деплоя
+    env_file:
+      - path: .env
+        required: false
+    # Бэкенд ходит сюда по http://signals:8000 внутри сети, наружу порт открыт только на localhost
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      backend:
+        aliases:
+          - signals
+
+networks:
+  # Bridge-сеть создаёт compose-проект starlift-backend, поэтому бэкенд нужно поднять первым
+  backend:
+    external: true
+    name: java-speaker-net

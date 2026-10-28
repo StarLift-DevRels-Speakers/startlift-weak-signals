@@ -92,3 +92,19 @@ The image installs the locked dependency set and runs `python -m signals`. The a
 supplied at run time and is never baked into the image: `.env` is excluded from the build context, so
 pass it with `--env-file .env` or `-e GIGACHAT_TOKEN=<key>`. The image declares a healthcheck that
 polls `GET /health` on `SIGNALS_PORT`.
+
+## Deployment
+
+The stand runs the service next to `starlift-backend` with `docker compose`. The service joins the
+backend's bridge network `java-speaker-net` under the alias `signals`, so the backend reaches it at
+`http://signals:8000` (`WEAK_SIGNALS_BASE_URL`). The port is also published on `127.0.0.1:8000` of the
+host for debugging. Deploy the backend first: its compose project creates the network.
+
+```bash
+docker compose up -d --build
+```
+
+On push to `main` the workflow `.github/workflows/deploy.yml` deploys on the self-hosted runner. The
+checkout deletes untracked files, so the settings live on the stand outside the runner's work folder,
+in `~/starlift/env/weak-signals.env` (same keys as `.env.example`); the workflow copies it to `.env`
+before starting the container.
