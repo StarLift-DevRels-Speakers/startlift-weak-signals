@@ -8,7 +8,6 @@ wheels/
 .uv-cache
 .pytest_cache
 .ruff_cache
-.dsh
 
 # Virtual environments
 .venv

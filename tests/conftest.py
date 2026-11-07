@@ -4,6 +4,11 @@ from datetime import UTC, date, datetime
 
 import pytest
 
+from signals.schemas.external import (
+    ExternalFeedbackItem,
+    ExternalTalentRequest,
+    ExternalTalkItem,
+)
 from signals.schemas.signals import (
     AchievementItem,
     FeedbackItem,
@@ -76,3 +81,40 @@ def make_talent_request(**overrides: object) -> TalentRequest:
 def speaker() -> TalentRequest:
     """A fully populated speaker request."""
     return make_talent_request()
+
+
+def make_external_request(**overrides: object) -> ExternalTalentRequest:
+    """Build a fully populated external candidate request, with per-test overrides."""
+    payload: dict[str, object] = {
+        "username": "jane_doe",
+        "about": "Backend engineer, talks about distributed systems.",
+        "company": "Acme",
+        "company_role": "Staff Engineer",
+        "region": "Moscow",
+        "social_links_count": 3,
+        "talks_total": 8,
+        "profile_tags": ["backend", "distributed systems"],
+        "recent_talks": [
+            ExternalTalkItem(
+                topic="Taming queues",
+                talk_date=datetime(2026, 3, 1, 12, 30, tzinfo=UTC),
+            )
+        ],
+        "recent_feedback": [
+            ExternalFeedbackItem(
+                feedback="Clear structure", platform_name="Habr", rating=5
+            ),
+            ExternalFeedbackItem(
+                feedback="Too fast", platform_name="YouTube", conference="DevConf"
+            ),
+        ],
+    }
+    payload.update(overrides)
+
+    return ExternalTalentRequest.model_validate(payload)
+
+
+@pytest.fixture
+def external_candidate() -> ExternalTalentRequest:
+    """A fully populated external candidate request."""
+    return make_external_request()
