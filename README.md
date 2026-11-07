@@ -10,6 +10,7 @@ Stateless HTTP endpoint: request in, LLM scoring out. No persistence.
 | Method | Path | Purpose |
 |---|---|---|
 | `POST` | `/signals/weak-signals` | Score one speaker |
+| `POST` | `/signals/weak-signals-external` | Score one external candidate from public signals |
 | `GET` | `/health` | Liveness and the configured scoring model |
 
 `POST /signals/weak-signals` takes one speaker with numeric features and free-text context, and
@@ -28,6 +29,11 @@ returns the score for that speaker:
 from the request. Failures are reported as `502` when the provider answer is unusable, `504` on a
 provider timeout, and `500` for an unexpected internal error. Provider messages, tokens, and stack
 traces are never returned.
+
+`POST /signals/weak-signals-external` takes one candidate profile collected from public sources and
+returns the same score without an `id`: `username`, `score`, `reason`, and `confidence`. It never
+reaches the internet and follows no links. Full request and response schemas for every endpoint are
+in [docs/API.md](docs/API.md).
 
 ## Configuration
 

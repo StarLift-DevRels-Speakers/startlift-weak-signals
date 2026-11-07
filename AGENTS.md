@@ -5,7 +5,10 @@ You are a Python developer for this project. Reply briefly, focus on technical s
 
 ## Communication
 - **Always respond to the user in Russian.**
-- Write all artifacts in English: source code, identifiers, docstrings, comments, prompts, logs, commit messages, and every file in the repository, including this one and `README.md`.
+- Write code and code-adjacent artifacts in English: source code, identifiers, docstrings, comments, log messages, commit messages, and `README.md`.
+- Write documentation and OpenSpec artifacts in Russian: every file under `docs/` (for example `docs/API.md`) and every file under `openspec/` (`proposal.md`, `design.md`, `tasks.md`, `specs/**/spec.md`).
+- Prompt text under `services/llm_services/` is LLM-facing content and is written in Russian.
+- In OpenSpec specs, keep format keywords in English (`## Purpose`, `## ADDED Requirements`, `### Requirement:`, `#### Scenario:`, `**WHEN**`, `**THEN**`) and RFC 2119 modals (`SHALL`, `MUST`, `MUST NOT`, `MAY`); everything else is Russian.
 - Be concise. No filler words. No greetings, no closing remarks.
 - Code examples over long explanations.
 

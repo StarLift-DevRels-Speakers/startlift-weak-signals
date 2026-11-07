@@ -9,6 +9,7 @@ from fastapi import FastAPI
 
 from signals.config.app_config import get_app_config
 from signals.config.gigachat_config import get_gigachat_config
+from signals.routers.external import router as external_router
 from signals.routers.health import router as health_router
 from signals.routers.signals import router as signals_router
 from signals.services.llm_services.gigachat_client import get_gigachat_client
@@ -32,6 +33,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(title="signals", version="0.1.0", lifespan=lifespan)
 app.include_router(health_router)
 app.include_router(signals_router)
+app.include_router(external_router)
 
 
 def main() -> None:
