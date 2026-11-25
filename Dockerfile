@@ -1,21 +1,36 @@
-FROM python:3.12-slim
+# syntax=docker/dockerfile:1
+
+# Both stages must use the same Python version and distribution for venv portability.
+FROM python:3.12-slim-bookworm AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    UV_LINK_MODE=copy \
-    UV_COMPILE_BYTECODE=1 \
     PATH="/app/.venv/bin:$PATH"
-
-COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /uvx /bin/
 
 WORKDIR /app
 
+FROM base AS build
+ENV UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=never
+
+COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /bin/uv
+
 # Install the locked dependency set first so it survives source-only changes.
 COPY pyproject.toml uv.lock README.md ./
-RUN uv sync --frozen --no-dev --no-install-project
+RUN --mount=type=cache,id=starlift-uv,target=/root/.cache/uv,sharing=locked \
+    uv sync --frozen --no-dev --no-install-project
 
 COPY src ./src
-RUN uv sync --frozen --no-dev
+RUN --mount=type=cache,id=starlift-uv,target=/root/.cache/uv,sharing=locked \
+    uv sync --frozen --no-dev --no-editable
+
+FROM base AS runtime
+RUN groupadd --system --gid 10001 appuser \
+    && useradd --system --uid 10001 --gid appuser --home-dir /app --shell /usr/sbin/nologin appuser
+
+# The wheel installation includes signals; source, uv and its cache stay in build.
+COPY --from=build /app/.venv /app/.venv
+USER appuser
 
 EXPOSE 8000
 
