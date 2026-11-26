@@ -64,7 +64,6 @@ class SignalsService:
             confidence=scored.confidence,
         )
 
-
 def get_signals_service() -> SignalsService:
     """FastAPI dependency that provides the scoring service."""
     return SignalsService(
