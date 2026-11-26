@@ -32,7 +32,6 @@ async def get_weak_signals(
     except ScoreUnavailableError as exc:
         logger.warning("Scoring unavailable for speaker %s: %s", payload.id, exc)
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Scoring provider unavailable",
         ) from exc
     except TimeoutError as exc:
